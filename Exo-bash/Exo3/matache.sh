@@ -1,32 +1,42 @@
-#! /bin/bash
+if [ $# -ne 1 ]; then
 
-if [ $# -ne 1 ]; then 
+	echo "Nombre d'arguments erronés!"
+	
+	exit 1
 
-echo "Nombre d'arguments erronés" >&2
-exit 1
+elif [ ! -d $1 ]; then 
 
-elif [ ! -d $1 ]; then
+    echo "L'argument n'est pas un dossier!"
+    
+    exit 1
 
-echo "Ce dossier n'existe pas!"
-exit 1
+fi
 
-fi 
+file=$(ls -l $1)
+count=0
 
-file=$(ls -l)
+if [ ! -d $1/exec ]; then
 
-while read in line; do
-	i=0
+mkdir $1/exec
 
-	if [ -x $line ]; then
+fi
 
-		echo $(du -sh $line) >&2
+for i in $file; do
+    
+    if [ -x $1/$i ] && [ ! -d $1/$i ]; then
 
-		i=$(i + 1)
+        echo $(du -sh $1/$i) >&2
+        
+        count=$((count + 1))
 
-	fi
+        mv $1/$i $1/exec
 
-done < $file
+    fi
+
+done
+
+echo $count >&2
 
 exit 0
 
-
+fi
